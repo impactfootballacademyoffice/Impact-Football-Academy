@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Impact Football Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ══════════════════════════════════════════════════
+       RESET & VARIABLES
+    ══════════════════════════════════════════════════ */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+    :root {
+      --gold:        #C9A84C;
+      --gold-bright: #F0C94D;
+      --gold-dim:    rgba(201,168,76,0.15);
+      --black:       #080808;
+      --dark:        #0E0E0E;
+      --card:        #131313;
+      --border:      rgba(201,168,76,0.18);
+      --white:       #F2EDE4;
+      --muted:       rgba(242,237,228,0.55);
+      --hint:        rgba(242,237,228,0.28);
+      --pad:         clamp(20px, 5vw, 60px);
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Cursor: hide on touch, show on desktop */
+    @media (pointer: fine) { body { cursor: none; } }
+    @media (pointer: coarse) { #cursor, #cursor-ring { display: none !important; } }
+
+    /* ══════════════════════════════════════════════════
+       CUSTOM CURSOR
+    ══════════════════════════════════════════════════ */
+    #cursor {
+      position: fixed; width: 10px; height: 10px;
+      background: var(--gold); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform 0.12s ease;
+    }
+    #cursor-ring {
+      position: fixed; width: 34px; height: 34px;
+      border: 1px solid var(--gold); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: width 0.2s, height 0.2s, opacity 0.2s;
+      opacity: 0.45;
+    }
+
+    /* ══════════════════════════════════════════════════
+       SCROLLBAR
+    ══════════════════════════════════════════════════ */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+    /* ══════════════════════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════════════════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px var(--pad);
+      background: linear-gradient(to bottom, rgba(8,8,8,0.95), transparent);
+      transition: background 0.4s, padding 0.3s;
+    }
+    nav.scrolled {
+      background: rgba(8,8,8,0.97);
+      border-bottom: 1px solid var(--border);
+      padding: 12px var(--pad);
+    }
+
+    /* ── LOGO ──
+       YOUR LOGO GOES HERE.
+       Right now it shows the ball icon + text.
+       To use your own logo image, replace:
+         <div class="logo-icon">⚽</div> IMPACT FA
+       with:
+         <img src="logo.png" class="logo-img" alt="Impact FA Logo">
+       Make sure logo.png is in the same folder as this file.
+       Or use an online URL: <img src="https://..." class="logo-img">
+    */
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(18px, 4vw, 24px);
+      letter-spacing: 2px; color: var(--gold);
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; background: var(--gold);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    /* style for when you switch to <img> logo */
+    .logo-img { height: 40px; width: auto; object-fit: contain; flex-shrink: 0; }
+
+    /* ── Desktop nav links ── */
+    .nav-links { display: flex; gap: 22px; list-style: none; }
+    .nav-links a {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--muted);
+      text-decoration: none; transition: color 0.2s;
+      position: relative; white-space: nowrap;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--gold); transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      background: var(--gold) !important; color: var(--black) !important;
+      padding: 8px 18px !important; border-radius: 2px; font-weight: 700 !important;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { background: var(--gold-bright) !important; }
+
+    /* ── Hamburger button ── */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; padding: 6px; cursor: pointer;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 1.5px;
+      background: var(--gold); border-radius: 1px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* ── Fullscreen mobile menu ── */
+    .mobile-menu {
+      display: none; position: fixed; inset: 0;
+      background: rgba(8,8,8,0.98); z-index: 490;
+      flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+      padding: 80px 0 40px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(26px, 8vw, 40px); font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--white); text-decoration: none;
+      padding: 10px 32px; transition: color 0.2s;
+      border-bottom: 1px solid var(--border); width: 75%; text-align: center;
+    }
+    .mobile-menu a:hover { color: var(--gold); }
+    .mobile-menu a.mcta {
+      color: var(--gold) !important;
+      border: 1px solid var(--gold); border-radius: 2px; margin-top: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+    }
+
+    /* ══════════════════════════════════════════════════
+       SECTION COMMONS
+    ══════════════════════════════════════════════════ */
+    section { padding: clamp(60px, 10vw, 100px) var(--pad); }
+
+    .section-tag {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 600; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-tag::before { content: '//'; opacity: 0.45; }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(38px, 9vw, 90px);
+      line-height: 0.95; letter-spacing: 1px; color: var(--white);
+      margin-bottom: clamp(28px, 5vw, 52px);
+    }
+    .section-title span { color: var(--gold); }
+
+    .gold-line { height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
+
+    /* ══════════════════════════════════════════════════
+       SCROLL REVEAL
+    ══════════════════════════════════════════════════ */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-left { opacity: 0; transform: translateX(-28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal-left.visible { opacity: 1; transform: none; }
+    .reveal-right { opacity: 0; transform: translateX(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal-right.visible { opacity: 1; transform: none; }
+    @media (max-width: 600px) { .reveal-left, .reveal-right { transform: translateY(20px); } }
+
+    /* ══════════════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════════════ */
+    #home {
+      min-height: 100svh;
+      position: relative;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: 100px var(--pad) 130px;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 70% at 70% 50%, rgba(201,168,76,0.07) 0%, transparent 65%),
+        linear-gradient(135deg, #080808 40%, #100f08 100%);
+    }
+    .pitch-wrap {
+      position: absolute; right: 0; top: 0; bottom: 0;
+      width: 55%; overflow: hidden; opacity: 0.07;
+      animation: pitchFade 2s ease 0.5s both;
+    }
+    .pitch-wrap svg { width: 100%; height: 100%; }
+    @keyframes pitchFade { from { opacity: 0; } to { opacity: 0.07; } }
+    @media (max-width: 600px) { .pitch-wrap { width: 100%; opacity: 0.04; } }
+
+    #particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .particle {
+      position: absolute; background: var(--gold); border-radius: 50%;
+      animation: floatUp linear infinite; opacity: 0;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(110vh); opacity: 0; }
+      8%   { opacity: 0.7; }
+      92%  { opacity: 0.2; }
+      100% { transform: translateY(-10vh) translateX(12px); opacity: 0; }
+    }
+
+    .hero-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(10px, 2.5vw, 13px); font-weight: 600;
+      letter-spacing: 4px; text-transform: uppercase; color: var(--gold);
+      display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
+      animation: fadeUp 0.9s ease 0.2s both;
+    }
+    .hero-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--gold); display: block; flex-shrink: 0; }
+
+    .hero-h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(60px, 14vw, 148px);
+      line-height: 0.9; letter-spacing: 2px;
+      animation: fadeUp 0.9s ease 0.35s both;
+    }
+    .hero-h1 span { color: var(--gold); display: block; }
+
+    .hero-sub {
+      font-size: clamp(14px, 3vw, 16px); font-weight: 300; line-height: 1.75;
+      color: var(--muted); max-width: 440px; margin-top: 20px;
+      animation: fadeUp 0.9s ease 0.5s both;
+    }
+
+    .hero-actions {
+      display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px;
+      animation: fadeUp 0.9s ease 0.65s both;
+    }
+    .btn-gold {
+      background: var(--gold); color: var(--black); border: none;
+      padding: clamp(12px,3vw,15px) clamp(22px,4vw,36px);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(13px,3vw,14px); font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; border-radius: 2px;
+      text-decoration: none; display: inline-block;
+      transition: background 0.2s, transform 0.15s; white-space: nowrap;
+    }
+    .btn-gold:hover { background: var(--gold-bright); transform: translateY(-2px); }
+    .btn-ghost {
+      background: transparent; color: var(--white);
+      border: 1px solid rgba(242,237,228,0.28);
+      padding: clamp(12px,3vw,15px) clamp(22px,4vw,36px);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(13px,3vw,14px); font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; border-radius: 2px;
+      text-decoration: none; display: inline-block;
+      transition: border-color 0.2s, color 0.2s; white-space: nowrap;
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    .hero-stats {
+      display: flex; flex-wrap: wrap; gap: clamp(14px,4vw,36px);
+      margin-top: clamp(32px,6vw,56px);
+      animation: fadeUp 0.9s ease 0.8s both;
+    }
+    .hstat { border-left: 2px solid var(--gold); padding-left: 13px; }
+    .hstat-n { font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px,7vw,46px); color: var(--gold); line-height: 1; }
+    .hstat-l { font-size: clamp(9px,2vw,11px); font-weight: 300; letter-spacing: 2px; text-transform: uppercase; color: var(--hint); margin-top: 3px; }
+
+    .scroll-hint { position: absolute; right: var(--pad); bottom: 36px; display: flex; flex-direction: column; align-items: center; gap: 8px; animation: fadeUp 0.9s ease 1s both; }
+    .scroll-hint p { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--hint); writing-mode: vertical-rl; }
+    .scroll-bar { width: 1px; height: 48px; background: linear-gradient(to bottom, var(--gold), transparent); animation: scPulse 2.2s ease infinite; }
+    @keyframes scPulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+    @media (max-width: 480px) { .scroll-hint { display: none; } }
+
+    /* ══════════════════════════════════════════════════
+       ABOUT
+    ══════════════════════════════════════════════════ */
+    #about { background: var(--dark); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1.1fr;
+      gap: clamp(32px, 6vw, 80px); align-items: center;
+    }
+    @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; } }
+
+    .about-visual {
+      position: relative; aspect-ratio: 4/5; background: var(--card);
+      border: 1px solid var(--border); border-radius: 3px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center; max-height: 400px;
+    }
+    @media (max-width: 768px) { .about-visual { aspect-ratio: 16/9; max-height: 240px; } }
+    .about-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .about-visual-ph { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; color: rgba(201,168,76,0.3); text-align: center; padding: 20px; text-transform: uppercase; line-height: 2; }
+    .corner-tl { position: absolute; top: -1px; left: -1px; width: 38px; height: 38px; border-top: 3px solid var(--gold); border-left: 3px solid var(--gold); }
+    .corner-br { position: absolute; bottom: -1px; right: -1px; width: 38px; height: 38px; border-bottom: 3px solid var(--gold); border-right: 3px solid var(--gold); }
+    .about-badge { position: absolute; bottom: 14px; left: 14px; background: var(--gold); color: var(--black); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 8px 14px; }
+    .about-body p { font-size: clamp(14px,3vw,16px); font-weight: 300; line-height: 1.85; color: var(--muted); margin-bottom: 16px; }
+    .values-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 26px; }
+    .value-chip { border: 1px solid var(--border); border-radius: 2px; padding: 12px 14px; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); text-align: center; transition: background 0.2s, border-color 0.2s; }
+    .value-chip:hover { background: rgba(201,168,76,0.08); border-color: var(--gold); }
+
+    /* ══════════════════════════════════════════════════
+       PROGRAMS
+    ══════════════════════════════════════════════════ */
+    #programs { background: var(--black); }
+    .programs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+    @media (max-width: 860px) { .programs-grid { grid-template-columns: 1fr 1fr; gap: 2px; } }
+    @media (max-width: 500px) { .programs-grid { grid-template-columns: 1fr; } }
+
+    .prog-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 2px;
+      padding: clamp(22px, 4vw, 40px) clamp(18px, 3vw, 30px);
+      position: relative; overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .prog-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(to right, var(--gold), transparent); transform: scaleX(0); transform-origin: left; transition: transform 0.4s; }
+    .prog-card:hover { transform: translateY(-5px); border-color: rgba(201,168,76,0.4); }
+    .prog-card:hover::before { transform: scaleX(1); }
+    .prog-num { font-family: 'Bebas Neue', sans-serif; font-size: 50px; color: rgba(201,168,76,0.08); line-height: 1; }
+    .prog-icon { font-size: 26px; margin: 6px 0 14px; display: block; }
+    .prog-name { font-family: 'Barlow Condensed', sans-serif; font-size: 19px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--white); margin-bottom: 10px; }
+    .prog-desc { font-size: 14px; font-weight: 300; line-height: 1.7; color: rgba(242,237,228,0.48); margin-bottom: 18px; }
+    .prog-age { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; }
+
+    /* ══════════════════════════════════════════════════
+       COACHES
+    ══════════════════════════════════════════════════ */
+    #coaches { background: var(--dark); }
+    .coaches-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(10px, 2vw, 18px); }
+    @media (max-width: 860px) { .coaches-grid { grid-template-columns: 1fr 1fr; } }
+
+    .coach-card { border: 1px solid var(--border); border-radius: 2px; background: var(--card); overflow: hidden; transition: border-color 0.3s, transform 0.3s; }
+    .coach-card:hover { border-color: var(--gold); transform: translateY(-4px); }
+    .coach-photo { aspect-ratio: 3/4; background: linear-gradient(160deg, #1c1c1c, #0a0a0a); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .coach-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .coach-initials { font-family: 'Bebas Neue', sans-serif; font-size: 60px; color: rgba(201,168,76,0.12); }
+    .coach-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(8,8,8,0.9) 0%, transparent 55%); }
+    .coach-info { padding: 14px 16px; }
+    .coach-name { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 1px; color: var(--white); margin-bottom: 3px; }
+    .coach-role { font-size: 11px; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 300; }
+
+    /* ══════════════════════════════════════════════════
+       ACHIEVEMENTS
+    ══════════════════════════════════════════════════ */
+    #achievements { background: var(--gold); padding: clamp(60px, 10vw, 88px) var(--pad); }
+    #achievements .section-tag { color: rgba(0,0,0,0.45); }
+    #achievements .section-title { color: var(--black); }
+    #achievements .section-title span { color: rgba(0,0,0,0.35); }
+    .trophy-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(0,0,0,0.12); }
+    @media (max-width: 600px) { .trophy-grid { grid-template-columns: 1fr 1fr; } }
+    .trophy-item { background: var(--gold); padding: clamp(26px,5vw,44px) clamp(14px,3vw,28px); text-align: center; transition: background 0.2s; }
+    .trophy-item:hover { background: var(--gold-bright); }
+    .trophy-icon { font-size: clamp(26px,6vw,38px); margin-bottom: 12px; display: block; }
+    .trophy-num { font-family: 'Bebas Neue', sans-serif; font-size: clamp(38px,8vw,58px); color: var(--black); line-height: 1; }
+    .trophy-label { font-size: clamp(9px,2vw,11px); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(0,0,0,0.5); margin-top: 6px; }
+
+    /* ══════════════════════════════════════════════════
+       GALLERY
+    ══════════════════════════════════════════════════ */
+    #gallery { background: var(--black); }
+    .gallery-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 220px 220px; gap: 4px; }
+    @media (max-width: 768px) { .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 160px); } }
+    @media (max-width: 480px) { .gallery-grid { grid-template-columns: 1fr; grid-template-rows: repeat(5, 160px); } }
+
+    .gal-item { background: var(--card); border: 1px solid var(--border); overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; transition: border-color 0.3s; }
+    .gal-item:first-child { grid-row: span 2; }
+    @media (max-width: 768px) { .gal-item:first-child { grid-row: auto; grid-column: span 2; } }
+    @media (max-width: 480px) { .gal-item:first-child { grid-column: auto; } }
+    .gal-item:hover { border-color: var(--gold); }
+    .gal-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+    .gal-item:hover img { transform: scale(1.06); }
+    .gal-ph { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; color: rgba(201,168,76,0.22); text-transform: uppercase; text-align: center; padding: 12px; }
+    .gal-overlay { position: absolute; inset: 0; background: rgba(201,168,76,0.1); opacity: 0; transition: opacity 0.3s; display: flex; align-items: center; justify-content: center; }
+    .gal-item:hover .gal-overlay { opacity: 1; }
+    .gal-overlay span { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; border: 1px solid var(--gold); padding: 6px 16px; }
+
+    /* ══════════════════════════════════════════════════
+       SCHEDULE
+    ══════════════════════════════════════════════════ */
+    #schedule { background: var(--dark); }
+    .schedule-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 860px) { .schedule-grid { grid-template-columns: 1fr; } }
+    .sched-card { background: var(--card); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
+    .sched-day { background: var(--gold); color: var(--black); font-family: 'Bebas Neue', sans-serif; font-size: 19px; letter-spacing: 2px; padding: 12px 18px; }
+    .slot { display: flex; align-items: center; padding: 12px 18px; border-bottom: 1px solid rgba(201,168,76,0.07); transition: background 0.2s; gap: 8px; }
+    .slot:hover { background: rgba(201,168,76,0.04); }
+    .slot:last-child { border-bottom: none; }
+    .slot-time { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; color: var(--gold); letter-spacing: 1px; min-width: 46px; }
+    .slot-name { font-size: 13px; color: rgba(242,237,228,0.68); flex: 1; }
+    .slot-age { font-size: 10px; font-weight: 600; letter-spacing: 1px; color: rgba(201,168,76,0.45); text-transform: uppercase; white-space: nowrap; }
+
+    /* ══════════════════════════════════════════════════
+       REGISTER
+    ══════════════════════════════════════════════════ */
+    #register { background: var(--black); text-align: center; }
+    #register .section-tag { justify-content: center; }
+    .reg-sub { font-size: clamp(14px,3vw,16px); font-weight: 300; color: var(--muted); margin-bottom: 40px; margin-top: -24px; }
+    .reg-form { max-width: 560px; margin: 0 auto; display: grid; gap: 14px; text-align: left; width: 100%; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 520px) { .form-row { grid-template-columns: 1fr; } }
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); }
+    .form-input {
+      background: var(--card); border: 1px solid var(--border); border-radius: 2px;
+      padding: 13px 15px; font-family: 'Barlow', sans-serif;
+      font-size: 16px; /* 16px prevents iOS zoom on focus */
+      color: var(--white); outline: none; transition: border-color 0.2s; width: 100%;
+      -webkit-appearance: none; appearance: none;
+    }
+    .form-input:focus { border-color: var(--gold); }
+    .form-input::placeholder { color: rgba(242,237,228,0.22); }
+    select.form-input {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C9A84C' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+    }
+    select.form-input option { background: #111; }
+    .submit-btn {
+      background: var(--gold); color: var(--black); border: none;
+      padding: 16px 40px; width: 100%; margin-top: 4px;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 15px;
+      font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+      border-radius: 2px; transition: background 0.2s, transform 0.15s;
+    }
+    .submit-btn:hover { background: var(--gold-bright); transform: translateY(-2px); }
+    .form-success { display: none; text-align: center; padding: 22px; background: rgba(201,168,76,0.08); border: 1px solid var(--border); border-radius: 2px; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; letter-spacing: 2px; color: var(--gold); }
+
+    /* ══════════════════════════════════════════════════
+       CONTACT
+    ══════════════════════════════════════════════════ */
+    #contact { background: var(--dark); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(30px,6vw,72px); align-items: start; }
+    @media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
+    .contact-items { display: flex; flex-direction: column; gap: 22px; }
+    .citem { display: flex; gap: 14px; align-items: flex-start; }
+    .cicon { width: 44px; height: 44px; flex-shrink: 0; border: 1px solid var(--border); border-radius: 2px; background: var(--card); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .cdetail label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 4px; }
+    .cdetail p { font-size: 14px; color: var(--muted); line-height: 1.65; }
+    .cdetail a { color: var(--gold); text-decoration: none; }
+    /* Map stretches */
+    .map-box { background: var(--card); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; min-height: 340px; height: 100%; display: flex; flex-direction: column; }
+    .map-box iframe { width: 100%; flex: 1; min-height: 340px; border: none; display: block; }
+    .map-ph { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 10px; min-height: 340px; }
+    .map-ph span { font-size: 32px; opacity: 0.2; }
+    .map-ph p { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 3px; color: rgba(201,168,76,0.3); text-transform: uppercase; }
+    @media (max-width: 768px) { .map-box { min-height: 280px; height: 280px; } .map-box iframe { min-height: 280px; height: 280px; flex: none; } }
+    /* ══════════════════════════════════════════════════
+       WHATSAPP FLOAT BUTTON
+    ══════════════════════════════════════════════════ */
+    .wa-btn {
+      position: fixed; bottom: 22px; right: 18px; z-index: 400;
+      width: 50px; height: 50px; border-radius: 50%; background: #25D366;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; transition: transform 0.2s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+    .wa-btn:hover { transform: scale(1.1); }
+    .wa-btn svg { width: 26px; height: 26px; fill: #fff; }
+
+    /* ══════════════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════════════ */
+    footer {
+      background: #040404; border-top: 1px solid var(--border);
+      padding: clamp(24px,5vw,40px) var(--pad);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 14px;
+    }
+    .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+    .footer-ball { width: 24px; height: 24px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    .footer-copy { font-size: 11px; color: var(--hint); letter-spacing: 1px; text-align: center; }
+    .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
+    .footer-links a { font-size: 12px; color: rgba(242,237,228,0.35); text-decoration: none; letter-spacing: 1px; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--gold); }
+    @media (max-width: 600px) { footer { flex-direction: column; align-items: center; text-align: center; } .footer-links { justify-content: center; } }
+  </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ══════════════════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════════════════ -->
+<nav id="navbar">
+
+  <!--
+  ╔══════════════════════════════════════════════════════╗
+  ║  HOW TO ADD YOUR ACADEMY LOGO                       ║
+  ║                                                      ║
+  ║  STEP 1: Save your logo as "logo.png" in the same   ║
+  ║          folder as this HTML file.                  ║
+  ║                                                      ║
+  ║  STEP 2: In the code below, DELETE this:            ║
+  ║            <div class="logo-icon">⚽</div>           ║
+  ║            IMPACT FA                                ║
+  ║          And REPLACE with:                          ║
+  ║            <img src="logo.png" class="logo-img"     ║
+  ║                 alt="Impact Football Academy">       ║
+  ║                                                      ║
+  ║  ONLINE LOGO (e.g. from Google Drive / WhatsApp):   ║
+  ║  Use: <img src="YOUR_IMAGE_URL" class="logo-img">   ║
+  ╚══════════════════════════════════════════════════════╝
+  -->
+  <a href="#home" class="logo">
+    <img src="Images/logo.png.png" class="logo-img" alt="">
+    IMPACT FOOTBALL ACADEMY
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#programs">Programs</a></li>
+    <li><a href="#coaches">Coaches</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#achievements">Trophies</a></li>
+    <li><a href="#schedule">Schedule</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#register" class="nav-cta">Register</a></li>
+  </ul>
+
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile fullscreen menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about"        onclick="closeMenu()">About</a>
+  <a href="#programs"     onclick="closeMenu()">Programs</a>
+  <a href="#coaches"      onclick="closeMenu()">Coaches</a>
+  <a href="#gallery"      onclick="closeMenu()">Gallery</a>
+  <a href="#achievements" onclick="closeMenu()">Trophies</a>
+  <a href="#schedule"     onclick="closeMenu()">Schedule</a>
+  <a href="#contact"      onclick="closeMenu()">Contact</a>
+  <a href="#register"     onclick="closeMenu()" class="mcta">Join Now →</a>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════ -->
+<section id="home">
+  <div class="hero-bg"></div>
+  <div id="particles"></div>
+  <div class="pitch-wrap">
+    <svg viewBox="0 0 600 900" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="30" y="30" width="540" height="840" fill="none" stroke="white" stroke-width="2.5"/>
+      <line x1="30" y1="450" x2="570" y2="450" stroke="white" stroke-width="2.5"/>
+      <circle cx="300" cy="450" r="88" fill="none" stroke="white" stroke-width="2.5"/>
+      <circle cx="300" cy="450" r="5" fill="white"/>
+      <rect x="150" y="30" width="300" height="130" fill="none" stroke="white" stroke-width="2.5"/>
+      <rect x="150" y="740" width="300" height="130" fill="none" stroke="white" stroke-width="2.5"/>
+      <rect x="215" y="30" width="170" height="64" fill="none" stroke="white" stroke-width="2.5"/>
+      <rect x="215" y="806" width="170" height="64" fill="none" stroke="white" stroke-width="2.5"/>
+      <circle cx="300" cy="130" r="8" fill="none" stroke="white" stroke-width="2.5"/>
+      <circle cx="300" cy="770" r="8" fill="none" stroke="white" stroke-width="2.5"/>
+    </svg>
+  </div>
+
+  <div class="hero-eyebrow">Impact Football Academy · Est. 2021</div>
+  <h1 class="hero-h1">WHERE<br>CHAMPIONS<br><span>ARE BUILT</span></h1>
+  <p class="hero-sub">Elite football training for all ages. We develop technique, mentality, and a lifelong passion for the beautiful game.</p>
+
+  <div class="hero-actions">
+    <a href="#register" class="btn-gold">Join The Academy</a>
+    <a href="#programs" class="btn-ghost">Explore Programs</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hstat"><div class="hstat-n" data-count="500">0</div><div class="hstat-l">Players Trained</div></div>
+    <div class="hstat"><div class="hstat-n" data-count="12">0</div><div class="hstat-l">Expert Coaches</div></div>
+    <div class="hstat"><div class="hstat-n" data-count="8">0</div><div class="hstat-l">Years Active</div></div>
+    <div class="hstat"><div class="hstat-n" data-count="30">0</div><div class="hstat-l">Trophies Won</div></div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-bar"></div>
+    <p>Scroll</p>
+  </div>
+</section>
+
+<div class="gold-line"></div>
+
+<!-- ══════════════════════════════════════════════════
+     ABOUT
+══════════════════════════════════════════════════ -->
+<section id="about">
+  <div class="about-grid">
+    <div class="about-visual reveal-left">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+      <!--
+        ADD PHOTO: Replace the div below with:
+        <img src="academy-photo.jpg" alt="Impact Football Academy">
+      -->
+      <div class="about-visual-ph">📸<img src="Images/academy photo.jpg" alt="Academy Photo"><br><small style="font-size:10px;opacity:0.5;">replace with &lt;img src="photo.jpg"&gt;</small></div>
+      <div class="about-badge">Est. 2015 · Aurangabad, MH</div>
+    </div>
+    <div class="about-body reveal-right">
+      <div class="section-tag">Our Story</div>
+      <h2 class="section-title">MORE THAN A <span>CLUB</span></h2>
+      <p>Impact Football Academy was born from a single belief — that every player, regardless of age or background, deserves world-class coaching and the chance to reach their true potential on the pitch.</p>
+      <p>From grassroots juniors to competitive adults, we build more than footballers. We build discipline, resilience, teamwork, and an unshakeable love for the beautiful game.</p>
+      <p>Based in Aurangabad, Maharashtra, our academy has produced players who have gone on to represent at district, state, and national levels.</p>
+      <div class="values-grid">
+        <div class="value-chip">Excellence</div>
+        <div class="value-chip">Discipline</div>
+        <div class="value-chip">Teamwork</div>
+        <div class="value-chip">Passion</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     PROGRAMS
+══════════════════════════════════════════════════ -->
+<section id="programs">
+  <div class="section-tag reveal">Training Programs</div>
+  <h2 class="section-title reveal">FIND YOUR <span>PATH</span></h2>
+  <div class="programs-grid reveal">
+    <div class="prog-card"><div class="prog-num">01</div><span class="prog-icon">⚽</span><div class="prog-name">Junior Academy</div><div class="prog-desc">Foundation skills, fun-first coaching, and building a love for the game in our youngest players.</div><div class="prog-age">Ages 5 – 12</div></div>
+    <div class="prog-card"><div class="prog-num">02</div><span class="prog-icon">🏃</span><div class="prog-name">Youth Elite</div><div class="prog-desc">Tactical development, competitive exposure, and a pathway toward semi-professional football.</div><div class="prog-age">Ages 13 – 17</div></div>
+    <div class="prog-card"><div class="prog-num">03</div><span class="prog-icon">💪</span><div class="prog-name">Adult Program</div><div class="prog-desc">High-performance coaching, fitness conditioning, and competitive matches for serious adult players.</div><div class="prog-age">Ages 18+</div></div>
+    <div class="prog-card"><div class="prog-num">04</div><span class="prog-icon">🎯</span><div class="prog-name">Skills Clinic</div><div class="prog-desc">Specialized sessions on dribbling, finishing, passing accuracy, and positional awareness.</div><div class="prog-age">All Ages</div></div>
+    <div class="prog-card"><div class="prog-num">05</div><span class="prog-icon">🧤</span><div class="prog-name">GK Academy</div><div class="prog-desc">Dedicated goalkeeper training — shot-stopping, distribution, and commanding the box.</div><div class="prog-age">All Ages</div></div>
+    <div class="prog-card"><div class="prog-num">06</div><span class="prog-icon">🏆</span><div class="prog-name">Elite Batch</div><div class="prog-desc">High-performance program for selected players targeting district and state level competitions.</div><div class="prog-age">By Trial</div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     COACHES
+══════════════════════════════════════════════════ -->
+<section id="coaches">
+  <div class="section-tag reveal">The Staff</div>
+  <h2 class="section-title reveal">MEET THE <span>COACHES</span></h2>
+  <div class="coaches-grid reveal">
+    <!--
+      ADD COACH PHOTO: Inside .coach-photo, replace:
+        <div class="coach-initials">HC</div>
+      with:
+        <img src="coach1.jpg" alt="Coach Name">
+      Keep the <div class="coach-overlay"></div> line below it.
+    -->
+    <div class="coach-card">
+      <div class="coach-photo"><img src="Images/Director.png" alt="Technical Director & Manager"><div class="coach-overlay"></div></div>
+      <div class="coach-info"><div class="coach-name">Shaikh Umair Sikandar</div><div class="coach-role">Technical Director & Manager</div></div>
+    </div>
+    <div class="coach-card">
+      <div class="coach-photo"><img src="Images/Professional_pic.jpeg" alt=""><div class="coach-overlay"></div></div>
+      <div class="coach-info"><div class="coach-name">Shaikh Adnan Sikandar</div><div class="coach-role">Head Coach & Player Development</div></div>
+    </div>
+    <div class="coach-card">
+      <div class="coach-photo"><img src="Images/GK Coach.png" alt="Goalkeeper Coach"><div class="coach-overlay"></div></div>
+      <div class="coach-info"><div class="coach-name">GK Coach Name</div><div class="coach-role">Goalkeeper Coach</div></div>
+    </div>
+    <div class="coach-card">
+      <div class="coach-photo"><img src="Images/Physio.png" alt="Team Rehabilitation Specialist"><div class="coach-overlay"></div></div>
+      <div class="coach-info"><div class="coach-name">Dr. Aselah Fatema</div><div class="coach-role">Team Rehabilitation Specialist</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     ACHIEVEMENTS
+══════════════════════════════════════════════════ -->
+<section id="achievements">
+  <div class="section-tag reveal">Honours &amp; Records</div>
+  <h2 class="section-title reveal">OUR <span>TROPHIES</span></h2>
+  <div class="trophy-grid reveal">
+    <div class="trophy-item"><span class="trophy-icon">🏆</span><div class="trophy-num">18</div><div class="trophy-label">District Titles</div></div>
+    <div class="trophy-item"><span class="trophy-icon">🥇</span><div class="trophy-num">6</div><div class="trophy-label">State Championships</div></div>
+    <div class="trophy-item"><span class="trophy-icon">⭐</span><div class="trophy-num">40+</div><div class="trophy-label">Players Promoted</div></div>
+    <div class="trophy-item"><span class="trophy-icon">🎖️</span><div class="trophy-num">8</div><div class="trophy-label">Years of Wins</div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     GALLERY
+══════════════════════════════════════════════════ -->
+<section id="gallery">
+  <div class="section-tag reveal">Media &amp; Moments</div>
+  <h2 class="section-title reveal">THE <span>GALLERY</span></h2>
+  <div class="gallery-grid reveal">
+    <!--
+      ADD IMAGES: Replace <div class="gal-ph">...</div> with:
+      <img src="photo.jpg" alt="description">
+      inside each .gal-item
+    -->
+    <div class="gal-item"><div class="gal-ph">📸 Main Photo</div><div class="gal-overlay"><span>View</span></div></div>
+    <div class="gal-item"><div class="gal-ph">📸 Match Day</div><div class="gal-overlay"><span>View</span></div></div>
+    <div class="gal-item"><div class="gal-ph">📸 Trophy</div><div class="gal-overlay"><span>View</span></div></div>
+    <div class="gal-item"><div class="gal-ph">📸 Training</div><div class="gal-overlay"><span>View</span></div></div>
+    <div class="gal-item"><div class="gal-ph">📸 Team</div><div class="gal-overlay"><span>View</span></div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     SCHEDULE
+══════════════════════════════════════════════════ -->
+<section id="schedule">
+  <div class="section-tag reveal">Timetable</div>
+  <h2 class="section-title reveal">WEEKLY <span>SCHEDULE</span></h2>
+  <div class="schedule-grid reveal">
+    <div class="sched-card">
+      <div class="sched-day">Monday / Wednesday</div>
+      <div class="slot"><span class="slot-time">06:00</span><span class="slot-name">Morning Fitness</span><span class="slot-age">Adults</span></div>
+      <div class="slot"><span class="slot-time">16:00</span><span class="slot-name">Junior Training</span><span class="slot-age">U-12</span></div>
+      <div class="slot"><span class="slot-time">18:00</span><span class="slot-name">Youth Elite</span><span class="slot-age">U-17</span></div>
+      <div class="slot"><span class="slot-time">19:30</span><span class="slot-name">Adult Program</span><span class="slot-age">18+</span></div>
+    </div>
+    <div class="sched-card">
+      <div class="sched-day">Tuesday / Thursday</div>
+      <div class="slot"><span class="slot-time">07:00</span><span class="slot-name">Skills Clinic</span><span class="slot-age">All Ages</span></div>
+      <div class="slot"><span class="slot-time">16:30</span><span class="slot-name">GK Academy</span><span class="slot-age">All Ages</span></div>
+      <div class="slot"><span class="slot-time">18:00</span><span class="slot-name">Tactical Training</span><span class="slot-age">U-17</span></div>
+      <div class="slot"><span class="slot-time">19:30</span><span class="slot-name">S&amp;C Session</span><span class="slot-age">Elite</span></div>
+    </div>
+    <div class="sched-card">
+      <div class="sched-day">Saturday / Sunday</div>
+      <div class="slot"><span class="slot-time">07:00</span><span class="slot-name">Elite Batch</span><span class="slot-age">By Trial</span></div>
+      <div class="slot"><span class="slot-time">09:00</span><span class="slot-name">Match Day</span><span class="slot-age">All Teams</span></div>
+      <div class="slot"><span class="slot-time">11:00</span><span class="slot-name">Open Training</span><span class="slot-age">All Ages</span></div>
+      <div class="slot"><span class="slot-time">16:00</span><span class="slot-name">Junior Fun Games</span><span class="slot-age">U-12</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     REGISTER
+══════════════════════════════════════════════════ -->
+<section id="register">
+  <div class="section-tag reveal">Enrollment</div>
+  <h2 class="section-title reveal">JOIN THE <span>ACADEMY</span></h2>
+  <p class="reg-sub reveal">Fill in your details and our team will reach out within 24 hours.</p>
+  <div class="reg-form reveal" id="regForm">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Player Name</label><input class="form-input" type="text" placeholder="Full name" id="f-name" /></div>
+      <div class="form-group"><label class="form-label">Age</label><input class="form-input" type="number" placeholder="e.g. 14" id="f-age" min="4" max="60" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Parent / Guardian</label><input class="form-input" type="text" placeholder="Full name" id="f-parent" /></div>
+      <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" type="tel" placeholder="+91 XXXXX XXXXX" id="f-phone" /></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Program Interested In</label>
+      <select class="form-input" id="f-program">
+        <option value="">Select a program...</option>
+        <option>Junior Academy (Ages 5–12)</option>
+        <option>Youth Elite (Ages 13–17)</option>
+        <option>Adult Program (Ages 18+)</option>
+        <option>Skills Clinic (All Ages)</option>
+        <option>GK Academy (All Ages)</option>
+        <option>Elite Batch (By Trial)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Experience Level</label>
+      <select class="form-input" id="f-exp">
+        <option value="">Select level...</option>
+        <option>Beginner – No prior experience</option>
+        <option>Intermediate – School / local level</option>
+        <option>Advanced – District / State level</option>
+        <option>Semi-pro / Pro</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Message (Optional)</label><input class="form-input" type="text" placeholder="Any questions or preferred timing..." id="f-msg" /></div>
+    <button class="submit-btn" onclick="submitForm()">Submit Registration →</button>
+    <div class="form-success" id="formSuccess">✓ &nbsp;Registration received! We'll contact you within 24 hours.</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     CONTACT
+══════════════════════════════════════════════════ -->
+<section id="contact">
+  <div class="section-tag reveal">Get In Touch</div>
+  <h2 class="section-title reveal">FIND <span>US</span></h2>
+  <div class="contact-grid">
+    <div class="contact-items reveal-left">
+      <div class="citem">
+        <div class="cicon">📍</div>
+        <div class="cdetail"><label>Our Branches</label><p>Impact Football Academy<br>📍Urban terna turf,N6 Cidco, Aurangabad, Maharashtra 431001</p><p>📍Club 9 Multi-sports turf,Cidco Mahanagar 1, Waluj,  Aurangabad, Maharashtra 431001</p><p>📍MPP turf,Wankhede Nagar,Mehmoodpura Aurangabad, Maharashtra 431001</p></div><!-- UPDATE -->
+      </div>
+      
+      <div class="citem">
+        <div class="cicon">📞</div>
+        <div class="cdetail"><label>Phone</label><p><a href="tel:+91XXXXXXXXXX">+91 788 7777 355 +91 8983 444 391</a></p></div><!-- UPDATE -->
+      </div>
+      <div class="citem">
+        <div class="cicon">📧</div>
+        <div class="cdetail"><label>Email</label><p><a href="mailto:info@impactfa.in">impactfootballacademy.office@gmail.com</a></p></div><!-- UPDATE -->
+      </div>
+      <div class="citem">
+        <div class="cicon">🕐</div>
+        <div class="cdetail"><label>Training Hours</label><p>Mon – Fri: 4:00 PM – 8:00 PM<br>Sunday: 7:00 AM – 2:00 PM</p></div>
+      </div>
+      <div class="citem">
+        <div class="cicon">📱</div>
+        <div class="cdetail">
+          <label>Follow Us</label>
+          <p>
+            <a href="https://www.instagram.com/ifa_impactfootballacademy" target="_blank">Instagram</a><!-- UPDATE -->
+            &nbsp;·&nbsp;
+            <a href="https://facebook.com/YOUR_PAGE" target="_blank">Facebook</a><!-- UPDATE -->
+            &nbsp;·&nbsp;
+            <a href="https://www.youtube.com/@impactfootballacademy.official" target="_blank">YouTube</a><!-- UPDATE -->
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="map-box reveal-right">
+      <!--
+        GOOGLE MAPS EMBED:
+        1. Go to maps.google.com → search your ground
+        2. Click Share → Embed a map → Copy the iframe code
+        3. Paste that iframe code here, replacing the div.map-ph below
+      -->
+      <span>🗺️</span><p><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3751.920326868529!2d75.3578592!3d19.885585900000002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bdba3aebf7065ef%3A0x3527cbc77290a272!2sImpact%20Football%20Academy!5e0!3m2!1sen!2sin!4v1775102140833!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></p>
+    </div>
+  </div>
+</section>
+
+<div class="gold-line"></div>
+
+<!-- ══════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-logo"><img src="Images/logo.png.png" class="logo-img" alt="Impact Football Academy Logo"> IMPACT FA</div>
+  <div class="footer-copy">© 2021 Impact Football Academy · Aurangabad, Maharashtra</div>
+  <div class="footer-links">
+    <a href="https://www.instagram.com/ifa_impactfootballacademy" target="_blank">Instagram</a><!-- UPDATE -->
+    <a href="https://facebook.com/YOUR_PAGE" target="_blank">Facebook</a><!-- UPDATE -->
+    <a href="https://www.youtube.com/@impactfootballacademy.official" target="_blank">YouTube</a><!-- UPDATE -->
+  </div>
+</footer>
+
+<!--
+  WHATSAPP BUTTON — UPDATE YOUR NUMBER BELOW
+  Replace 919XXXXXXXXX with your WhatsApp number
+  Format: 91 + your 10-digit number (no spaces)
+  Example: 9876543210 → 919876543210
+-->
+<a class="wa-btn" href="https://chat.whatsapp.com/EORTGbY1ASNCCBuy9gv7bn" target="_blank" aria-label="Join WhatsApp Community">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+  </svg>
+</a>
+
+<!-- ══════════════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════════ -->
+<script>
+  /* ── Custom cursor (desktop only) ── */
+  if (window.matchMedia('(pointer: fine)').matches) {
+    const cur = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cur.style.left = mx+'px'; cur.style.top = my+'px'; });
+    (function ar() { rx += (mx-rx)*.11; ry += (my-ry)*.11; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(ar); })();
+    document.querySelectorAll('a,button,.prog-card,.coach-card,.gal-item,.value-chip,.trophy-item').forEach(el => {
+      el.addEventListener('mouseenter', () => { cur.style.transform='translate(-50%,-50%) scale(2)'; ring.style.width=ring.style.height='54px'; ring.style.opacity='.25'; });
+      el.addEventListener('mouseleave', () => { cur.style.transform='translate(-50%,-50%) scale(1)'; ring.style.width=ring.style.height='34px'; ring.style.opacity='.45'; });
+    });
+  }
+
+  /* ── Navbar scroll ── */
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+  }, { passive: true });
+
+  /* ── Mobile menu ── */
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const mm = document.getElementById('mobileMenu');
+    hb.classList.toggle('open');
+    mm.classList.toggle('open');
+    document.body.style.overflow = mm.classList.contains('open') ? 'hidden' : '';
+  }
+  function closeMenu() {
+    document.getElementById('hamburger').classList.remove('open');
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ── Scroll reveal ── */
+  const revObs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => revObs.observe(el));
+
+  /* ── Counter animation ── */
+  function countUp(el) {
+    const target = parseInt(el.dataset.count);
+    const hasPlus = target >= 30;
+    let start = null;
+    const dur = 1800;
+    function step(ts) {
+      if (!start) start = ts;
+      const p = Math.min((ts-start)/dur, 1);
+      const e = 1-Math.pow(1-p, 3);
+      el.textContent = Math.floor(e*target) + (hasPlus && p===1 ? '+' : '');
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = target + (hasPlus ? '+' : '');
+    }
+    requestAnimationFrame(step);
+  }
+  const cntObs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { countUp(e.target); cntObs.unobserve(e.target); } });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('[data-count]').forEach(el => cntObs.observe(el));
+
+  /* ── Particles ── */
+  const pw = document.getElementById('particles');
+  const pCount = window.innerWidth < 600 ? 10 : 22;
+  for (let i = 0; i < pCount; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const s = Math.random() > 0.7 ? 3 : 2;
+    p.style.cssText = `left:${Math.random()*100}%;width:${s}px;height:${s}px;animation-duration:${9+Math.random()*14}s;animation-delay:${Math.random()*14}s;`;
+    pw.appendChild(p);
+  }
+/* ══════════════════════════════════════════════════
+     FORM — Google Sheets connected ✅
+     WhatsApp notifications: paste your CallMeBot key below
+  ══════════════════════════════════════════════════ */
+  /*
+  ══════════════════════════════════════════════════════
+   FORM SETUP — 2 destinations on every submission:
+   1. Google Sheets  ✅ already connected
+   2. Email to your Gmail via Formspree (5 min setup below)
+ 
+   HOW TO ACTIVATE EMAIL NOTIFICATIONS (Formspree):
+   ─────────────────────────────────────────────────
+   Step 1 → Go to https://formspree.io
+   Step 2 → Click "Get Started" → sign up FREE with
+            impactfootballacademy10@gmail.com
+   Step 3 → Click "New Form" → name it "IFA Registration"
+   Step 4 → Copy the Form ID shown (looks like: xpwzgkrb)
+   Step 5 → Replace PASTE_FORMSPREE_ID below with that ID
+   
+   That's it! Every submission will email your Gmail instantly.
+  ══════════════════════════════════════════════════════
+  */
+ 
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw3CvXjVrmmFRVijtgtcEeoGiOr0lxBYxhvdZgq5MK_49BuX8YWHK4AUeCrfpIZD6Nnig/exec';
+const FORMSPREE_ID = 'xbdqqwoo';
+
+async function submitForm(){
+
+  const name = document.getElementById('f-name').value.trim();
+  const age = document.getElementById('f-age').value.trim();
+  const parent = document.getElementById('f-parent').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  const program = document.getElementById('f-program').value;
+  const experience = document.getElementById('f-exp').value;
+  const message = document.getElementById('f-msg').value.trim();
+
+  if(!name || !phone || !program){
+    alert('Please fill Name, Phone and Program');
+    return;
+  }
+
+  const btn = document.querySelector('.submit-btn');
+  btn.innerText = 'Submitting...';
+  btn.disabled = true;
+
+  const timestamp = new Date().toLocaleString('en-IN',{
+    timeZone:'Asia/Kolkata'
+  });
+
+  const payload = {
+    timestamp,
+    name,
+    age,
+    parent,
+    phone,
+    program,
+    experience,
+    message
+  };
+
+  /* Google Sheets */
+  /* Google Sheets fire-and-forget */
+fetch(GOOGLE_SCRIPT_URL, {
+  method: 'POST',
+  mode: 'no-cors',
+  headers: {'Content-Type':'application/json'},
+  body: JSON.stringify(payload)
+}).catch(err => console.log(err));
+
+/* Formspree awaited */
+await fetch('https://formspree.io/f/' + FORMSPREE_ID,{
+  method:'POST',
+  headers:{
+    'Content-Type':'application/json',
+    'Accept':'application/json'
+  },
+  body: JSON.stringify(payload)
+});
+  document.getElementById('regForm').reset();
+
+  btn.innerText = '✓ Registration Submitted!';
+  btn.disabled = false;
+
+  setTimeout(()=>{
+    btn.innerText = 'Submit Registration →';
+  },4000);
+}
+  
+</script>
+</body>
+</html>
